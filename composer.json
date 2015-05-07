@@ -1,0 +1,26 @@
+{
+  "name": "lyubaev/httphook",
+  "description": "Web application to perform hooks.",
+  "version": "1.0.0-dev",
+  "type": "project",
+  "keywords": ["httphook", "web hooks", "gitlab"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Lyubaev Kirill",
+      "email": "lubaev.ka@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0",
+    "monolog/monolog": "~1.13",
+    "symfony/console": "^2.6.6",
+    "symfony/var-dumper": "^2.6.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "Lyubaev\\HTTPHook\\": "src/Lyubaev/HTTPHook"
+    }
+  },
+  "bin": ["src/bin"]
+}
