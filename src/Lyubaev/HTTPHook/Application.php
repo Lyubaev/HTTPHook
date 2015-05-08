@@ -7,6 +7,7 @@ use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
+use Jeremeamia\SuperClosure\SerializableClosure;
 use Lyubaev\HTTPHook\Console\Command\InitCommand;
 
 
@@ -135,6 +136,11 @@ class Application
         unset($main_conf, $conf, $buffer_error);
     }
 
+    /**
+     * Статический метод выполняющий запуск приложения.
+     *
+     * @param array $conf массив конфигурации пользователя.
+     */
     public static function run(array $conf = array())
     {
         $that = new self($conf);
@@ -152,6 +158,18 @@ class Application
         exit(1);
     }
 
+    /**
+     * Метод выполняет проверку прав доступа к приложению, сравнивая
+     * полученный access_token с токеном в конфиг. файле.
+     *
+     * Метод получает "сырые" данные от сервера, переданные методом POST.
+     * Данные анализируются на предмет поступившего события. Если событие
+     * зарегистрировано, его обработчик будет вызван.
+     *
+     * В обработчик передаются 2 параметра:
+     * массив принятых декодированных данных
+     * объект логгера
+     */
     public function start()
     {
         # Авторизация.
@@ -167,7 +185,6 @@ class Application
             $this->error(LogLevel::EMERGENCY, 'Access denied. Requires a token.');
         }
 
-        # Получить данные от GitLab.
         $input = json_decode(file_get_contents('php://input'), true);
         if (null == $input) {
             if (0 !== json_last_error()) {
@@ -186,6 +203,9 @@ class Application
             # Событие не отслеживается.
             $this->log(LogLevel::INFO, sprintf('The event "%s" is not monitored.', $event));
             exit(0);
+        }
+        if (is_string($this->events[$event]) && strpos($this->events[$event], 'SerializableClosure')) {
+            $this->events[$event] = unserialize($this->events[$event])->getClosure();
         }
 
         if (is_callable($this->events[$event])) {

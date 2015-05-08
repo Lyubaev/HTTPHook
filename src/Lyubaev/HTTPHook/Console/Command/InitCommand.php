@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
+use Jeremeamia\SuperClosure\SerializableClosure;
 use Lyubaev\HTTPHook\Application;
 
 
@@ -85,6 +86,15 @@ class InitCommand extends Command
         if ('reset' === $input->getArgument('reset')) {
             if (file_exists(self::$user_conf)) {
                 $user_conf = include self::$user_conf;
+
+                if (isset($user_conf['events']) && is_array($user_conf['events'])) {
+                    foreach ($user_conf['events'] as &$handler) {
+                        if ($handler instanceof \Closure) {
+                            $handler = serialize(new SerializableClosure($handler));
+                        }
+                    }
+                }
+
                 $user_conf['access_token'] = self::generateToken($length_token);
                 $output->writeln('');
                 $output->writeln("<info>Your token: {$user_conf['access_token']}</info>");

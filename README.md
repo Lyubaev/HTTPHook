@@ -126,3 +126,4 @@ return [
 - "monolog/monolog": "~1.13",
 - "symfony/console": "^2.6.6",
 - "symfony/var-dumper": "^2.6.6"
+- "jeremeamia/SuperClosure": "^1.0.2"
