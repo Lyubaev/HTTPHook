@@ -10,7 +10,7 @@ use Lyubaev\HTTPHook\Console\Command\InitCommand;
 class Application extends ConsoleApplication
 {
     const NAME = 'HTTPHook';
-    const VERSION = '1.0.0-dev';
+    const VERSION = '1.0.0';
 
     public function __construct()
     {
